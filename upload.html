@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRIS | Envio de Documentos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        :root {
+            --primary: #0a192f;
+            --accent: #c5a059;
+            --accent-hover: #e0b872;
+            --bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #e2e8f0 0%, #f8fafc 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-main);
+            padding: 20px;
+        }
+
+        .upload-card {
+            background: var(--white);
+            width: 100%;
+            max-width: 500px;
+            padding: 50px 40px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+            position: relative;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            text-align: center;
+        }
+
+        .upload-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 6px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 24px 24px 0 0;
+        }
+
+        .logo {
+            font-family: 'Cinzel', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        h1 { font-size: 22px; font-weight: 600; color: var(--primary); margin-bottom: 10px; }
+        .instruction { font-size: 14px; color: var(--text-muted); margin-bottom: 30px; }
+
+        .file-drop-area {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            background-color: #fcfcfd;
+            transition: 0.3s;
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+
+        .file-drop-area:hover { border-color: var(--accent); background-color: #fdfaf5; }
+
+        input[type="file"] {
+            position: absolute; left: 0; top: 0; opacity: 0;
+            width: 100%; height: 100%; cursor: pointer;
+        }
+
+        .btn-submit {
+            width: 100%; padding: 16px;
+            background-color: var(--primary); color: var(--white);
+            border: none; border-radius: 12px;
+            font-size: 16px; font-weight: 600; cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 10px 15px -3px rgba(10, 25, 47, 0.2);
+        }
+
+        .btn-submit:hover { background-color: #162a4a; transform: translateY(-2px); }
+
+        /* Estilo para Erro/Expirado */
+        .error-state { display: none; }
+        .error-state i { color: var(--danger); margin-bottom: 20px; }
+
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            margin-top: 25px; text-decoration: none;
+            color: var(--text-muted); font-size: 12px; font-weight: 700;
+            transition: 0.3s;
+        }
+        .back-link:hover { color: var(--accent); }
+    </style>
+</head>
+<body>
+
+    <div class="upload-card" id="main-card">
+        
+        <div id="content-active">
+            <div class="logo">IRIS</div>
+            <h1>Portal de Registro</h1>
+            <p class="instruction">Envie seu documento para extração inteligente.</p>
+
+            <form action="https://vissionlet.com/n8n/webhook/70e9aed6-fe91-45f6-b041-488ca3241788" method="POST" enctype="multipart/form-data">
+                <div class="file-drop-area">
+                    <i data-lucide="upload-cloud" size="48" color="#c5a059" style="margin-bottom:15px"></i>
+                    <span id="file-label">Clique ou arraste o PDF aqui</span>
+                    <p id="file-name" style="margin-top:8px; font-weight:600; color:var(--accent)"></p>
+                    <input type="file" name="arquivo_usuario" id="arquivo_usuario" required accept=".pdf" onchange="updateFileName()">
+                </div>
+
+                <input type="hidden" name="origem" value="html_premium_seguro">
+                <input type="hidden" name="access_token" id="access-token-input">
+
+                <button type="submit" class="btn-submit">Processar Documento</button>
+            </form>
+        </div>
+
+        <div id="content-expired" class="error-state">
+            <i data-lucide="lock" size="64"></i>
+            <h1 style="color:var(--danger)">Link Expirado</h1>
+            <p class="instruction">Por razões de segurança, este link de acesso expirou (validade de 24h).<br>Solicite um novo link ao seu advogado.</p>
+        </div>
+
+        <a href="index.html" class="back-link">
+            <i data-lucide="chevron-left" size="16"></i> VOLTAR AO PAINEL
+        </a>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // VALIDAÇÃO DE ACESSO TEMPORAL (24H)
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const access = urlParams.get('access');
+            const activeDiv = document.getElementById('content-active');
+            const expiredDiv = document.getElementById('content-expired');
+            const tokenInput = document.getElementById('access-token-input');
+            const card = document.getElementById('main-card');
+
+            let isValid = false;
+
+            try {
+                if (access) {
+                    const decoded = atob(access); 
+                    const [prefix, expiryTime] = decoded.split('-');
+                    
+                    if (prefix === "IRIS" && Date.now() < parseInt(expiryTime)) {
+                        isValid = true;
+                        tokenInput.value = access;
+                    }
+                }
+            } catch (e) { isValid = false; }
+
+            if (!isValid) {
+                activeDiv.style.display = 'none';
+                expiredDiv.style.display = 'block';
+                card.style.borderTop = '6px solid var(--danger)';
+            }
+        });
+
+        function updateFileName() {
+            const input = document.getElementById('arquivo_usuario');
+            const label = document.getElementById('file-label');
+            const nameDisplay = document.getElementById('file-name');
+            
+            if (input.files.length > 0) {
+                label.innerText = "Arquivo selecionado:";
+                nameDisplay.innerText = input.files[0].name;
+            }
+        }
+    </script>
+</body>
+</html>
