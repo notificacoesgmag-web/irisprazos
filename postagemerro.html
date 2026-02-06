@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRIS | Erro no Envio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #0a192f;
+            --accent: #c5a059;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            color: var(--primary);
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+            max-width: 450px;
+            border-top: 6px solid var(--danger);
+        }
+
+        .icon-box {
+            color: var(--danger);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 22px;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        p {
+            color: #64748b;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .instruction-box {
+            background: #fef2f2;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #991b1b;
+            text-align: left;
+            border: 1px solid #fecaca;
+        }
+
+        .contact-info {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--primary);
+        }
+
+        .footer-logo {
+            margin-top: 25px;
+            font-family: 'Cinzel', serif;
+            font-size: 12px;
+            color: #cbd5e1;
+            letter-spacing: 3px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="icon-box">
+            <i data-lucide="alert-circle" style="width: 64px; height: 64px;"></i>
+        </div>
+        <h1>Houve um erro no envio</h1>
+        
+        <p>Não foi possível processar o seu documento neste momento.</p>
+
+        <div class="instruction-box">
+            <strong>O que fazer agora?</strong>
+            <ul style="margin-top: 8px; padding-left: 20px;">
+                <li>Verifique se o arquivo selecionado é um <b>contrato válido</b>.</li>
+                <li>Certifique-se de que o arquivo não está corrompido ou protegido por senha.</li>
+                <li>Tente realizar o upload novamente.</li>
+            </ul>
+        </div>
+        
+        <div class="contact-info">
+            Caso o problema persista, entre em contato com:<br>
+            <span style="color: var(--accent);">Gustavo Maggioni Advogados</span>
+        </div>
+
+        <div class="footer-logo">IRIS</div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

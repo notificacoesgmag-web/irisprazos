@@ -21,137 +21,59 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); line-height: 1.6; }
+        .navbar { background: var(--primary); padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; color: var(--white); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .logo-iris { font-family: 'Cinzel', serif; font-size: 24px; letter-spacing: 3px; color: var(--accent); }
+        
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        
+        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; gap: 15px; flex-wrap: wrap; }
+        .group-btns { display: flex; gap: 10px; }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
-            line-height: 1.6;
-        }
+        .btn-iris { padding: 12px 20px; border-radius: 4px; font-family: 'Cinzel', serif; font-weight: 700; text-decoration: none; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; border: none; font-size: 13px; }
+        .btn-novo { background: var(--accent); color: var(--white); }
+        .btn-share { background: var(--primary); color: var(--white); border: 1px solid var(--accent); }
+        .btn-share:hover { background: #112240; }
 
-        .navbar {
-            background: var(--primary);
-            padding: 1rem 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--white);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .logo-iris {
-            font-family: 'Cinzel', serif;
-            font-size: 24px;
-            letter-spacing: 3px;
-            color: var(--accent);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        .header-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .btn-iris {
-            padding: 12px 24px;
-            border-radius: 4px;
-            font-family: 'Cinzel', serif;
-            font-weight: 700;
-            text-decoration: none;
-            transition: 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-novo {
-            background: var(--accent);
-            color: var(--white);
-        }
-
-        .btn-novo:hover { background: #b08d4a; }
-
-        .data-card {
-            background: var(--white);
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th {
-            background: #f1f5f9;
-            padding: 15px;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-        }
-
-        td {
-            padding: 18px 15px;
-            border-bottom: 1px solid var(--border);
-            font-size: 14px;
-        }
-
-        .badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .status-active { background: #ecfdf5; color: var(--success); }
-        .status-warning { background: #fffbeb; color: var(--warning); }
-        .status-danger { background: #fef2f2; color: var(--danger); }
-
-        .btn-acao {
-            background: transparent;
-            color: var(--primary);
-            border: 1px solid var(--primary);
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: 0.2s;
-            text-decoration: none;
-        }
-
+        .data-card { background: var(--white); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #f1f5f9; padding: 15px; font-size: 11px; text-transform: uppercase; color: var(--text-muted); }
+        td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 14px; }
+        
+        .badge { padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; }
+        .status-danger { background: #fef2f2; color: var(--danger); border: 1px solid #fee2e2; }
+        .status-warning { background: #fffbeb; color: var(--warning); border: 1px solid #fef3c7; }
+        .status-success { background: #ecfdf5; color: var(--success); border: 1px solid #d1fae5; }
+        
+        .btn-acao { background: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 6px 12px; border-radius: 4px; font-size: 12px; text-decoration: none; transition: 0.2s; }
         .btn-acao:hover { background: var(--primary); color: white; }
+
+        #toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: white; padding: 12px 25px; border-radius: 8px; display: none; border-left: 5px solid var(--accent); box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; animation: slideIn 0.3s; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
         <div class="logo-iris">IRIS</div>
-        <div style="font-size: 12px; opacity: 0.8;">PAINEL DO ADVOGADO</div>
+        <div id="data-sistema" style="font-size: 11px; opacity: 0.7;"></div>
     </nav>
 
     <div class="container">
         <div class="header-actions">
             <div>
                 <h2 style="font-family: 'Cinzel', serif;">Gestão de Contratos</h2>
-                <p style="color: var(--text-muted); font-size: 14px;">Acompanhamento de prazos e aditamentos ativos.</p>
+                <p style="color: var(--text-muted); font-size: 14px;">Controle jurídico e prazos ativos.</p>
             </div>
-            <a href="postar_documento.html" class="btn-iris btn-novo">
-                <i data-lucide="plus-circle"></i> NOVO REGISTRO
-            </a>
+            <div class="group-btns">
+                <button onclick="gerarLinkCliente()" class="btn-iris btn-share">
+                    <i data-lucide="share-2"></i> LINK PARA CLIENTE
+                </button>
+                
+                <a href="postar_documento.html" class="btn-iris btn-novo">
+                    <i data-lucide="plus-circle"></i> NOVO REGISTRO
+                </a>
+            </div>
         </div>
 
         <div class="data-card">
@@ -161,70 +83,98 @@
                         <th>Locatário</th>
                         <th>Início Aditamento</th>
                         <th>Término Aditamento</th>
-                        <th>Status</th>
+                        <th>Final do Prazo</th>
                         <th style="text-align: right;">Ações</th>
                     </tr>
                 </thead>
                 <tbody id="tabela-corpo">
-                    <tr>
-                        <td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted);">
-                            <i data-lucide="loader-2" class="animate-spin" style="margin-bottom: 10px;"></i>
-                            <br>Carregando base de dados IRIS...
-                        </td>
-                    </tr>
+                    <tr><td colspan="5" style="text-align: center; padding: 40px;">Carregando dados...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
+    <div id="toast">Link de convite copiado com sucesso!</div>
+
     <script>
         lucide.createIcons();
 
+        const hoje = new Date();
+        document.getElementById('data-sistema').innerText = `Sistema ativo: ${hoje.toLocaleDateString('pt-br')}`;
+
+        function gerarLinkCliente() {
+            // 1. Pega a URL base dinamicamente (ajusta para GitHub Pages)
+            const urlBase = window.location.origin + window.location.pathname.replace('index.html', '');
+            
+            // 2. Gera o token de validade (24 horas) para o arquivo postar_documento.html
+            const validade = Date.now() + (24 * 60 * 60 * 1000);
+            const tokenRaw = `IRIS-${validade}`;
+            const tokenBase64 = btoa(tokenRaw);
+
+            // 3. Monta o link final
+            const linkFinal = `${urlBase}postar_documento.html?access=${tokenBase64}`;
+
+            navigator.clipboard.writeText(linkFinal).then(() => {
+                const toast = document.getElementById('toast');
+                toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none'; }, 3000);
+            });
+        }
+
+        function calcularDiferencaExata(dataTerminoStr) {
+            if (!dataTerminoStr || dataTerminoStr === '-') return null;
+            try {
+                const partes = dataTerminoStr.split('/');
+                const dataFim = new Date(partes[2], partes[1] - 1, partes[0]);
+                const dHoje = new Date();
+                dHoje.setHours(0,0,0,0);
+                dataFim.setHours(0,0,0,0);
+                const diff = dataFim.getTime() - dHoje.getTime();
+                return Math.ceil(diff / (1000 * 60 * 60 * 24));
+            } catch (e) { return null; }
+        }
+
         async function carregarDados() {
             const tbody = document.getElementById('tabela-corpo');
-            const webhookURL = "https://vissionlet.com/n8n/webhook/70e9aed6-fe91-45f6-b041-488ca3241788"; // URL do teu Webhook
+            const webhookURL = "https://vissionlet.com/n8n/webhook/buscarprazosativos"; 
 
             try {
                 const response = await fetch(webhookURL);
                 const dados = await response.json();
-
                 tbody.innerHTML = '';
 
-                if (!dados || dados.length === 0) {
-                    tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; padding: 20px;'>Nenhum contrato encontrado.</td></tr>";
-                    return;
-                }
-
                 dados.forEach(item => {
+                    const dias = calcularDiferencaExata(item.termino_aditamento);
+                    let badgeHTML = "";
+
+                    if (dias === null) {
+                        badgeHTML = `<span class="badge" style="background:#eee;">Pendente</span>`;
+                    } else if (dias < 0) {
+                        badgeHTML = `<span class="badge status-danger">Expirado</span>`;
+                    } else if (dias <= 15) {
+                        badgeHTML = `<span class="badge status-warning">Final do prazo: ${dias} dias</span>`;
+                    } else {
+                        badgeHTML = `<span class="badge status-success">Final do prazo: ${dias} dias</span>`;
+                    }
+
                     const row = document.createElement('tr');
-                    
-                    // Lógica simplificada de Status: Se tiver data de término, está ativo.
-                    const statusTexto = item.termino_aditamento ? "Monitorado" : "Pendente";
-                    const statusClass = item.termino_aditamento ? "status-active" : "status-warning";
-
-                    const linkDetalhes = `detalhes_processo.html?id=${encodeURIComponent(item.codigo_contrato)}`;
-
                     row.innerHTML = `
-                        <td style="font-weight: 600; color: var(--primary);">${item.locatario || 'Não identificado'}</td>
-                        <td style="color: var(--text-muted);">${item.inicio_aditamento || '-'}</td>
-                        <td style="font-weight: 500;">${item.termino_aditamento || '-'}</td>
-                        <td><span class="badge ${statusClass}">${statusTexto}</span></td>
+                        <td style="font-weight: 600;">${item.locatario || 'Indefinido'}</td>
+                        <td>${item.inicio_aditamento || '-'}</td>
+                        <td>${item.termino_aditamento || '-'}</td>
+                        <td>${badgeHTML}</td>
                         <td style="text-align: right;">
-                            <a href="${linkDetalhes}" class="btn-acao">
-                                <i data-lucide="edit-3" style="width:12px; vertical-align:middle;"></i> Gerenciar
-                            </a>
+                            <a href="detalhes_processo.html?id=${encodeURIComponent(item.codigo_contrato)}" class="btn-acao">Gerenciar</a>
                         </td>
                     `;
                     tbody.appendChild(row);
                 });
-                
                 lucide.createIcons();
             } catch (error) {
-                tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red; padding: 20px;'>Erro ao carregar dados. Verifique a conexão com o n8n.</td></tr>";
+                tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Erro na conexão.</td></tr>";
             }
         }
 
-        // Inicia a carga
         carregarDados();
     </script>
 </body>
