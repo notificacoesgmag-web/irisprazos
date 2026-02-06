@@ -18,6 +18,7 @@
             --warning: #f59e0b;
             --success: #10b981;
             --border: #e2e8f0;
+            --purple: #7c3aed;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -44,6 +45,7 @@
         .status-danger { background: #fef2f2; color: var(--danger); border: 1px solid #fee2e2; }
         .status-warning { background: #fffbeb; color: var(--warning); border: 1px solid #fef3c7; }
         .status-success { background: #ecfdf5; color: var(--success); border: 1px solid #d1fae5; }
+        .status-expired { background: #f5f3ff; color: var(--purple); border: 1px solid #ddd6fe; }
         
         .btn-acao { background: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 6px 12px; border-radius: 4px; font-size: 12px; text-decoration: none; transition: 0.2s; }
         .btn-acao:hover { background: var(--primary); color: white; }
@@ -83,7 +85,7 @@
                         <th>Locatário</th>
                         <th>Início Aditamento</th>
                         <th>Término Aditamento</th>
-                        <th>Final do Prazo</th>
+                        <th>Status do Prazo</th>
                         <th style="text-align: right;">Ações</th>
                     </tr>
                 </thead>
@@ -100,19 +102,14 @@
         lucide.createIcons();
 
         const hoje = new Date();
+        hoje.setHours(0,0,0,0);
         document.getElementById('data-sistema').innerText = `Sistema ativo: ${hoje.toLocaleDateString('pt-br')}`;
 
-        // ESTA FUNÇÃO GERA O LINK DE UPDATE PARA O CLIENTE (PÁGINA UPLOAD.HTML)
         function gerarLinkCliente() {
-            // Pega a URL base dinamicamente (ajusta para GitHub Pages)
             const urlBase = window.location.origin + window.location.pathname.replace('index.html', '');
-            
-            // Gera o token de validade (24 horas)
             const validade = Date.now() + (24 * 60 * 60 * 1000);
             const tokenRaw = `IRIS-${validade}`;
             const tokenBase64 = btoa(tokenRaw);
-
-            // IMPORTANTE: Aqui ele manda para UPLOAD.HTML (o update do cliente)
             const linkFinal = `${urlBase}upload.html?access=${tokenBase64}`;
 
             navigator.clipboard.writeText(linkFinal).then(() => {
@@ -122,18 +119,10 @@
             });
         }
 
-        // Funções de carregamento de dados (mantidas conforme original)
-        function calcularDiferencaExata(dataTerminoStr) {
-            if (!dataTerminoStr || dataTerminoStr === '-') return null;
-            try {
-                const partes = dataTerminoStr.split('/');
-                const dataFim = new Date(partes[2], partes[1] - 1, partes[0]);
-                const dHoje = new Date();
-                dHoje.setHours(0,0,0,0);
-                dataFim.setHours(0,0,0,0);
-                const diff = dataFim.getTime() - dHoje.getTime();
-                return Math.ceil(diff / (1000 * 60 * 60 * 24));
-            } catch (e) { return null; }
+        function parseData(dataStr) {
+            if (!dataStr || dataStr === '-') return null;
+            const partes = dataStr.split('/');
+            return new Date(partes[2], partes[1] - 1, partes[0]);
         }
 
         async function carregarDados() {
@@ -143,20 +132,37 @@
             try {
                 const response = await fetch(webhookURL);
                 const dados = await response.json();
+
+                // ORDENAÇÃO: Expirados primeiro, depois os mais próximos
+                dados.sort((a, b) => {
+                    const dataA = parseData(a.termino_aditamento);
+                    const dataB = parseData(b.termino_aditamento);
+                    if (!dataA) return 1;
+                    if (!dataB) return -1;
+                    return dataA - dataB;
+                });
+
                 tbody.innerHTML = '';
 
                 dados.forEach(item => {
-                    const dias = calcularDiferencaExata(item.termino_aditamento);
+                    const dataFim = parseData(item.termino_aditamento);
                     let badgeHTML = "";
 
-                    if (dias === null) {
+                    if (!dataFim) {
                         badgeHTML = `<span class="badge" style="background:#eee;">Pendente</span>`;
-                    } else if (dias < 0) {
-                        badgeHTML = `<span class="badge status-danger">Expirado</span>`;
-                    } else if (dias <= 15) {
-                        badgeHTML = `<span class="badge status-warning">Final do prazo: ${dias} dias</span>`;
                     } else {
-                        badgeHTML = `<span class="badge status-success">Final do prazo: ${dias} dias</span>`;
+                        const diff = dataFim.getTime() - hoje.getTime();
+                        const dias = Math.ceil(diff / (1000 * 60 * 60 * 24));
+
+                        if (dias < 0) {
+                            badgeHTML = `<span class="badge status-expired"><i data-lucide="alert-circle" size="14"></i> Expirado há ${Math.abs(dias)} dias</span>`;
+                        } else if (dias <= 7) {
+                            badgeHTML = `<span class="badge status-danger"><i data-lucide="clock" size="14"></i> Urgente: ${dias} dias</span>`;
+                        } else if (dias <= 30) {
+                            badgeHTML = `<span class="badge status-warning"><i data-lucide="alert-triangle" size="14"></i> Atenção: ${dias} dias</span>`;
+                        } else {
+                            badgeHTML = `<span class="badge status-success"><i data-lucide="check-circle" size="14"></i> Prazo: ${dias} dias</span>`;
+                        }
                     }
 
                     const row = document.createElement('tr');
@@ -173,7 +179,7 @@
                 });
                 lucide.createIcons();
             } catch (error) {
-                tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Erro na conexão.</td></tr>";
+                tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Erro na conexão com o servidor.</td></tr>";
             }
         }
 
