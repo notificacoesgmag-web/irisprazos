@@ -94,7 +94,7 @@
         </div>
     </div>
 
-    <div id="toast">Link de convite copiado com sucesso!</div>
+    <div id="toast">Link de Update (Cliente) copiado!</div>
 
     <script>
         lucide.createIcons();
@@ -102,17 +102,18 @@
         const hoje = new Date();
         document.getElementById('data-sistema').innerText = `Sistema ativo: ${hoje.toLocaleDateString('pt-br')}`;
 
+        // ESTA FUNÇÃO GERA O LINK DE UPDATE PARA O CLIENTE (PÁGINA UPLOAD.HTML)
         function gerarLinkCliente() {
-            // 1. Pega a URL base dinamicamente (ajusta para GitHub Pages)
+            // Pega a URL base dinamicamente (ajusta para GitHub Pages)
             const urlBase = window.location.origin + window.location.pathname.replace('index.html', '');
             
-            // 2. Gera o token de validade (24 horas) para o arquivo postar_documento.html
+            // Gera o token de validade (24 horas)
             const validade = Date.now() + (24 * 60 * 60 * 1000);
             const tokenRaw = `IRIS-${validade}`;
             const tokenBase64 = btoa(tokenRaw);
 
-            // 3. Monta o link final
-            const linkFinal = `${urlBase}postar_documento.html?access=${tokenBase64}`;
+            // IMPORTANTE: Aqui ele manda para UPLOAD.HTML (o update do cliente)
+            const linkFinal = `${urlBase}upload.html?access=${tokenBase64}`;
 
             navigator.clipboard.writeText(linkFinal).then(() => {
                 const toast = document.getElementById('toast');
@@ -121,6 +122,7 @@
             });
         }
 
+        // Funções de carregamento de dados (mantidas conforme original)
         function calcularDiferencaExata(dataTerminoStr) {
             if (!dataTerminoStr || dataTerminoStr === '-') return null;
             try {
