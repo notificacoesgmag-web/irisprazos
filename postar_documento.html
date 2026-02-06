@@ -52,7 +52,6 @@
 
         .instruction { font-size: 14px; color: var(--text-muted); margin-bottom: 30px; }
 
-        /* Área de Upload */
         .upload-area {
             border: 2px dashed var(--border);
             border-radius: 8px;
@@ -84,14 +83,13 @@
             text-transform: uppercase; cursor: pointer;
             transition: 0.4s; display: flex;
             align-items: center; justify-content: center; gap: 10px;
+            text-decoration: none;
         }
 
         .btn-submit:hover { background: var(--iris-gold); transform: translateY(-2px); }
 
-        /* Estilo para Erro de Acesso */
         .access-denied { display: none; padding: 20px; }
         .access-denied i { color: var(--danger); margin-bottom: 20px; }
-        .access-denied h2 { font-family: 'Cinzel', serif; margin-bottom: 10px; }
 
         .loading-overlay {
             display: none;
@@ -109,6 +107,7 @@
 
     <div class="container">
         <div class="card" id="main-card">
+            
             <div id="loading" class="loading-overlay">
                 <i data-lucide="loader-2" class="animate-spin" color="#c5a059" size="40"></i>
                 <p style="margin-top: 15px; font-weight: 600;">Processando Documento...</p>
@@ -117,8 +116,8 @@
             <div id="form-content">
                 <div class="logo-section" style="margin-bottom: 30px;">
                     <i data-lucide="shield-check" size="40" color="#c5a059" style="margin-bottom: 10px;"></i>
-                    <h1>Portal de Registro</h1>
-                    <p class="instruction">Envie o contrato para análise inteligente</p>
+                    <h1 id="title-portal">Portal de Registro</h1>
+                    <p class="instruction" id="desc-portal">Envie o contrato para análise inteligente</p>
                 </div>
 
                 <form action="https://vissionlet.com/n8n/webhook/70e9aed6-fe91-45f6-b041-488ca3241788" method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
@@ -129,7 +128,7 @@
                         <input type="file" name="arquivo_usuario" class="file-input" id="file-input" required accept=".pdf">
                     </div>
 
-                    <input type="hidden" name="origem" value="acesso_cliente_temporal">
+                    <input type="hidden" name="origem" id="origem-input" value="acesso_cliente_temporal">
                     <input type="hidden" name="access_token" id="access-token-input">
 
                     <button type="submit" class="btn-submit">
@@ -137,13 +136,17 @@
                         <i data-lucide="arrow-right" size="18"></i>
                     </button>
                 </form>
+                
+                <div style="margin-top: 20px;">
+                    <a href="index.html" style="font-size: 12px; color: var(--text-muted); text-decoration: none;">← Voltar ao Painel</a>
+                </div>
             </div>
 
             <div id="error-content" class="access-denied">
                 <i data-lucide="lock" size="60"></i>
                 <h2>Acesso Expirado</h2>
-                <p class="instruction">Este link de registro não é mais válido ou expirou. Por favor, solicite um novo link ao seu advogado ou gestor IRIS.</p>
-                <button onclick="location.reload()" class="btn-submit" style="background: #eee; color: #666; font-size: 11px;">Tentar Novamente</button>
+                <p class="instruction">Este link de registro não é mais válido ou expirou. Por favor, use o botão "Novo Registro" no seu painel principal.</p>
+                <a href="index.html" class="btn-submit">Ir para o Painel</a>
             </div>
         </div>
     </div>
@@ -155,32 +158,39 @@
             document.getElementById('loading').style.display = 'flex';
         }
 
-        // --- LÓGICA DE VALIDAÇÃO DE ACESSO ---
+        // --- LÓGICA DE VALIDAÇÃO FLEXÍVEL ---
         document.addEventListener("DOMContentLoaded", function() {
             const urlParams = new URLSearchParams(window.location.search);
             const access = urlParams.get('access');
+            const isInternal = urlParams.get('internal'); // Captura el parámetro del abogado
+
             const formContent = document.getElementById('form-content');
             const errorContent = document.getElementById('error-content');
             const tokenInput = document.getElementById('access-token-input');
+            const origenInput = document.getElementById('origem-input');
 
             let isValid = false;
 
-            try {
-                if (!access) throw "Sem token";
-
-                // Decodifica o Base64 gerado no painel
-                const decoded = atob(access); 
-                const [prefix, expiryTime] = decoded.split('-');
-
-                // Verifica se o prefixo está correto e se o tempo atual é menor que a expiração
-                if (prefix === "IRIS" && Date.now() < parseInt(expiryTime)) {
-                    isValid = true;
-                    tokenInput.value = access; // Salva o token no formulário para o n8n
-                }
-            } catch (e) {
-                isValid = false;
+            // 1. Si es acceso interno del abogado
+            if (isInternal === 'true') {
+                isValid = true;
+                origenInput.value = "painel_interno_advogado";
+                document.getElementById('title-portal').innerText = "Modo Administrador";
+                document.getElementById('desc-portal').innerText = "Registro direto de contrato";
+            } 
+            // 2. Si es acceso de cliente con token
+            else if (access) {
+                try {
+                    const decoded = atob(access); 
+                    const [prefix, expiryTime] = decoded.split('-');
+                    if (prefix === "IRIS" && Date.now() < parseInt(expiryTime)) {
+                        isValid = true;
+                        tokenInput.value = access;
+                    }
+                } catch (e) { isValid = false; }
             }
 
+            // Si no es ninguno de los dos, bloquear
             if (!isValid) {
                 formContent.style.display = 'none';
                 errorContent.style.display = 'block';
@@ -188,16 +198,12 @@
             }
         });
 
-        // Feedback de nome do arquivo
         const fileInput = document.getElementById('file-input');
-        const fileNameDisplay = document.getElementById('file-name');
-        const fileLabel = document.getElementById('file-label');
-
         fileInput.addEventListener('change', function() {
             if (this.files.length > 0) {
-                fileNameDisplay.innerText = this.files[0].name;
-                fileLabel.innerText = "Arquivo pronto:";
-                fileLabel.style.color = "var(--iris-gold)";
+                document.getElementById('file-name').innerText = this.files[0].name;
+                document.getElementById('file-label').innerText = "Arquivo pronto:";
+                document.getElementById('file-label').style.color = "var(--iris-gold)";
             }
         });
     </script>
