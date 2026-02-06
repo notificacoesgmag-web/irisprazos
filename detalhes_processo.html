@@ -285,75 +285,148 @@
     </div>
 
     <script>
-        lucide.createIcons();
+    lucide.createIcons();
 
-        // Carregar dados e lógica mantida
-        async function carregarFicha() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const idBusca = urlParams.get('id');
-            if (!idBusca) return;
+    async function carregarFicha() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const idBusca = urlParams.get('id');
+        if (!idBusca) return;
 
-            try {
-                const response = await fetch("https://vissionlet.com/n8n/webhook/buscarprazosativos");
-                const lista = await response.json();
-                const contrato = lista.find(c => String(c.codigo_contrato) === String(idBusca));
+        try {
+            const response = await fetch("https://vissionlet.com/n8n/webhook/buscarprazosativos");
+            const lista = await response.json();
+            const contrato = lista.find(c => String(c.codigo_contrato) === String(idBusca));
 
-                if (contrato) {
-                    document.getElementById('loader').style.display = 'none';
-                    document.getElementById('conteudo-detalhes').style.display = 'block';
-                    document.getElementById('titulo-cliente').innerText = contrato.locatario;
-                    document.getElementById('badge-id').innerText = "ID: " + contrato.codigo_contrato;
-                    document.getElementById('codigo_contrato_original').value = contrato.codigo_contrato;
-                    document.getElementById('det-locatario').value = contrato.locatario || '';
-                    document.getElementById('det-locadora').value = contrato.locadora || '';
-                    document.getElementById('det-inicio').value = contrato.inicio_aditamento || '';
-                    document.getElementById('det-vencimento').value = contrato.termino_aditamento || '';
-                    document.getElementById('det-valor').value = contrato.valor_aluguel || '';
-                    document.getElementById('det-indice').value = contrato.indice_reajuste || '';
-                    document.getElementById('det-garantia').value = contrato.garantia || '';
-                    document.getElementById('det-multa').value = contrato.multa_rescisoria || '';
-                    document.getElementById('det-resumo').value = contrato.resumo_contexto || '';
-                    document.getElementById('det-notas').value = contrato.notas_advogado || '';
-                    document.getElementById('det-status').value = contrato.estatus || 'Em andamento';
-                    if (contrato.PDF) document.getElementById('link-pdf').href = contrato.PDF;
+            if (contrato) {
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('conteudo-detalhes').style.display = 'block';
+                document.getElementById('titulo-cliente').innerText = contrato.locatario;
+                document.getElementById('badge-id').innerText = "ID: " + contrato.codigo_contrato;
+                document.getElementById('codigo_contrato_original').value = contrato.codigo_contrato;
+                
+                // Preenchendo os campos
+                document.getElementById('det-locatario').value = contrato.locatario || '';
+                document.getElementById('det-locadora').value = contrato.locadora || '';
+                document.getElementById('det-inicio').value = contrato.inicio_aditamento || '';
+                document.getElementById('det-vencimento').value = contrato.termino_aditamento || '';
+                document.getElementById('det-valor').value = contrato.valor_aluguel || '';
+                document.getElementById('det-indice').value = contrato.indice_reajuste || '';
+                document.getElementById('det-garantia').value = contrato.garantia || '';
+                document.getElementById('det-multa').value = contrato.multa_rescisoria || '';
+                document.getElementById('det-resumo').value = contrato.resumo_contexto || '';
+                document.getElementById('det-notas').value = contrato.notas_advogado || '';
+                document.getElementById('det-status').value = contrato.estatus || 'Em andamento';
+                
+                if (contrato.PDF) {
+                    document.getElementById('link-pdf').href = contrato.PDF;
                 }
-            } catch (e) { console.error(e); }
+            }
+        } catch (e) { 
+            console.error("Erro ao carregar dados:", e);
+            document.getElementById('loader').innerHTML = "<p>Erro ao carregar dados.</p>";
         }
+    }
 
-        function habilitarEdicao() {
-            document.querySelectorAll('input, textarea, select').forEach(el => el.disabled = false);
-            document.getElementById('btn-editar').style.display = 'none';
-            document.getElementById('btn-finalizar').style.display = 'none';
-            document.getElementById('btn-salvar').style.display = 'flex';
+    function habilitarEdicao() {
+        // Habilita todos os campos para escrita
+        document.querySelectorAll('input, textarea, select').forEach(el => {
+            if(el.id !== 'codigo_contrato_original') el.disabled = false;
+        });
+        
+        // Alterna os botões
+        document.getElementById('btn-editar').style.display = 'none';
+        document.getElementById('btn-finalizar').style.display = 'none';
+        document.getElementById('btn-salvar').style.display = 'flex';
+    }
+
+    // --- FUNÇÃO QUE ESTAVA FALTANDO ---
+    async function salvarAlteracoes() {
+        const btn = document.getElementById('btn-salvar');
+        const originalText = btn.innerHTML;
+        
+        // Criar o objeto com os dados atualizados
+        const dadosAtualizados = {
+            codigo_contrato: document.getElementById('codigo_contrato_original').value,
+            locatario: document.getElementById('det-locatario').value,
+            locadora: document.getElementById('det-locadora').value,
+            inicio_aditamento: document.getElementById('det-inicio').value,
+            termino_aditamento: document.getElementById('det-vencimento').value,
+            valor_aluguel: document.getElementById('det-valor').value,
+            indice_reajuste: document.getElementById('det-indice').value,
+            garantia: document.getElementById('det-garantia').value,
+            multa_rescisoria: document.getElementById('det-multa').value,
+            resumo_contexto: document.getElementById('det-resumo').value,
+            notas_advogado: document.getElementById('det-notas').value,
+            estatus: document.getElementById('det-status').value
+        };
+
+        try {
+            btn.disabled = true;
+            btn.innerHTML = "<i data-lucide='refresh-cw' class='spin'></i> Sincronizando...";
+            lucide.createIcons();
+
+            // Envia para o Webhook de atualização (verifique se esta URL está correta no seu n8n)
+            const response = await fetch("https://vissionlet.com/n8n/webhook/atualizar-prazo", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dadosAtualizados)
+            });
+
+            if (response.ok) {
+                alert("Dados atualizados com sucesso!");
+                window.location.reload(); // Recarrega para bloquear os campos novamente
+            } else {
+                throw new Error("Erro no servidor");
+            }
+        } catch (e) {
+            alert("Erro ao salvar alterações. Tente novamente.");
+            console.error(e);
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+            lucide.createIcons();
         }
+    }
 
-        async function finalizarPrazo() {
-            const id = document.getElementById('codigo_contrato_original').value;
-            if(!confirm("Concluir este prazo?")) return;
-            try {
-                await fetch("https://vissionlet.com/n8n/webhook/finalizar", {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ codigo_contrato: id })
-                });
-                window.location.href = 'index.html';
-            } catch (e) { alert("Erro"); }
+    async function finalizarPrazo() {
+        const id = document.getElementById('codigo_contrato_original').value;
+        if(!confirm("Deseja marcar este prazo como concluído?")) return;
+        
+        try {
+            await fetch("https://vissionlet.com/n8n/webhook/finalizar", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ codigo_contrato: id })
+            });
+            window.location.href = 'index.html';
+        } catch (e) { 
+            alert("Erro ao finalizar."); 
         }
+    }
 
-        function abrirModal() { document.getElementById('modalDelete').style.display = 'flex'; }
-        function fecharModal() { document.getElementById('modalDelete').style.display = 'none'; }
+    function abrirModal() { document.getElementById('modalDelete').style.display = 'flex'; }
+    function fecharModal() { document.getElementById('modalDelete').style.display = 'none'; }
 
-        async function confirmarExclusao() {
-            const id = document.getElementById('codigo_contrato_original').value;
+    async function confirmarExclusao() {
+        const id = document.getElementById('codigo_contrato_original').value;
+        try {
             await fetch("https://vissionlet.com/n8n/webhook/b09f3750-0654-4241-bc22-af29f3d2669f", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: id })
             });
             window.location.href = 'index.html';
-        }
+        } catch (e) { alert("Erro ao excluir."); }
+    }
 
-        window.onload = carregarFicha;
-    </script>
+    window.onload = carregarFicha;
+</script>
+
+<style>
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    .spin { animation: spin 1s linear infinite; }
+</style>
 </body>
 </html>
