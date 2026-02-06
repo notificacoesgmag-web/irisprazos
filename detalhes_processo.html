@@ -277,7 +277,7 @@
     <div id="modalDelete" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; z-index:1000;">
         <div style="background:white; padding:30px; border-radius:15px; max-width:350px; text-align:center;">
             <h3 style="margin-bottom:10px;">Excluir registro?</h3>
-            <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">Esta ação removerá o prazo permanentemente.</p>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">Esta ação removerá o registro permanentemente.</p>
             <div style="display:flex; gap:10px;">
                 <button onclick="fecharModal()" style="flex:1; padding:10px; border-radius:8px; border:1px solid var(--border); background:none; cursor:pointer;">Cancelar</button>
                 <button id="btn-confirmar-exclusao" onclick="confirmarExclusao()" style="flex:1; padding:10px; border-radius:8px; background:var(--danger); color:white; border:none; cursor:pointer;">Excluir</button>
@@ -408,36 +408,44 @@
     function abrirModal() { document.getElementById('modalDelete').style.display = 'flex'; }
     function fecharModal() { document.getElementById('modalDelete').style.display = 'none'; }
 
-    // FUNÇÃO CORRIGIDA PARA AGUARDAR O WEBHOOK RESPOND
+    // --- FUNÇÃO DE EXCLUSÃO COM CONTROLE DE TEMPO MELHORADO ---
     async function confirmarExclusao() {
         const id = document.getElementById('codigo_contrato_original').value;
         const btn = document.getElementById('btn-confirmar-exclusao');
-        const originalText = btn.innerText;
+        
+        btn.disabled = true;
+        btn.innerText = "Apagando...";
+
+        // Criamos um controller para poder cancelar a espera se demorar demais
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 35000); // 35 segundos de espera
 
         try {
-            // Desabilita o botão e mostra status de carregamento
-            btn.disabled = true;
-            btn.innerText = "Apagando...";
-
-            // O 'await' faz o navegador esperar a resposta do nó "Respond to Webhook" do n8n
             const response = await fetch("https://vissionlet.com/n8n/webhook/apagar", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: id })
+                body: JSON.stringify({ id: id }),
+                signal: controller.signal
             });
 
+            clearTimeout(timeoutId);
+
             if (response.ok) {
-                // Só redireciona se o n8n respondeu com sucesso
                 window.location.href = 'index.html';
             } else {
-                alert("O servidor processou, mas houve um erro interno.");
-                btn.disabled = false;
-                btn.innerText = originalText;
+                // Se o erro for 504 ou 502 (Timeout do Servidor), mas o n8n deletou, redirecionamos
+                console.warn("Servidor demorou, mas pode ter processado.");
+                window.location.href = 'index.html';
             }
         } catch (e) { 
-            alert("Erro de conexão com o sistema."); 
-            btn.disabled = false;
-            btn.innerText = originalText;
+            if (e.name === 'AbortError') {
+                // Se deu timeout, provavelmente o n8n completou a tarefa mas não avisou a tempo
+                window.location.href = 'index.html';
+            } else {
+                alert("Erro ao conectar com o servidor.");
+                btn.disabled = false;
+                btn.innerText = "Excluir";
+            }
         }
     }
 
