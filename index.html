@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IRIS | Gestão de Prazos Jurídicos</title>
+    <title>IRIS | Gestão Jurídica de Prazos</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -14,71 +14,100 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); font-size: 13px; }
-        .navbar { background: var(--primary); padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; color: var(--white); }
+        
+        /* Navbar */
+        .navbar { background: var(--primary); padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; color: var(--white); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .logo-iris { font-family: 'Cinzel', serif; font-size: 22px; letter-spacing: 2px; color: var(--accent); }
-        .container { max-width: 100%; margin: 20px auto; padding: 0 20px; }
         
+        .container { max-width: 100%; margin: 20px auto; padding: 0 25px; }
+
+        /* Botões de Ação (Postar / Link) */
+        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+        .group-btns { display: flex; gap: 10px; }
+        .btn-iris { padding: 10px 18px; border-radius: 4px; font-family: 'Cinzel', serif; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; border: none; font-size: 12px; transition: 0.3s; }
+        .btn-novo { background: var(--accent); color: var(--white); }
+        .btn-share { background: var(--primary); color: var(--white); border: 1px solid var(--accent); }
+        .btn-novo:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* Tabela */
         .data-card { background: var(--white); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow-x: auto; border: 1px solid var(--border); }
-        table { width: 100%; border-collapse: collapse; min-width: 1200px; }
+        table { width: 100%; border-collapse: collapse; min-width: 1100px; }
         th { background: #f1f5f9; padding: 12px; font-size: 10px; text-transform: uppercase; color: var(--text-muted); text-align: left; border-bottom: 2px solid var(--border); }
-        td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: middle; line-height: 1.4; }
+        td { padding: 14px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
         
-        .cnpj-sub { font-size: 11px; color: var(--text-muted); display: block; margin-top: 2px; }
+        .cnpj-sub { font-size: 11px; color: var(--text-muted); display: block; }
         .days-count { font-weight: 800; font-size: 11px; display: block; margin-top: 4px; }
         
         .badge-status { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .color-danger { color: var(--danger); }
-        .color-warning { color: var(--warning); }
-        .color-success { color: var(--success); }
-        .color-muted { color: var(--text-muted); }
-
         .bg-danger { background: #fee2e2; color: var(--danger); }
         .bg-warning { background: #fef3c7; color: var(--warning); }
         .bg-success { background: #d1fae5; color: var(--success); }
 
-        .btn-acao { background: var(--primary); color: white; padding: 8px 12px; border-radius: 4px; text-decoration: none; font-weight: 700; font-size: 11px; }
+        .btn-manage { background: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 6px 12px; border-radius: 4px; text-decoration: none; font-weight: 700; font-size: 11px; transition: 0.2s; }
+        .btn-manage:hover { background: var(--primary); color: white; }
+
+        #toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: white; padding: 12px 25px; border-radius: 8px; display: none; z-index: 1000; border-left: 4px solid var(--accent); }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
-        <div class="logo-iris">IRIS | CONTROLO DE PRAZOS</div>
-        <div id="data-hoje" style="font-size: 11px; font-weight: 600;"></div>
+        <div class="logo-iris">IRIS | SISTEMA DE PRAZOS</div>
+        <div id="data-hoje" style="font-size: 11px; opacity: 0.8;"></div>
     </nav>
 
     <div class="container">
+        <div class="header-actions">
+            <div>
+                <h2 style="font-family: 'Cinzel', serif; font-size: 18px;">Painel de Controle Jurídico</h2>
+                <p style="color: var(--text-muted); font-size: 12px;">Gestão de Renovatórias e Revisionais (Lei 8.245/91).</p>
+            </div>
+            <div class="group-btns">
+                <button onclick="gerarLinkCliente()" class="btn-iris btn-share">
+                    <i data-lucide="share-2" size="16"></i> LINK DE UPLOAD (CLIENTE)
+                </button>
+                <a href="postar_documento.html" class="btn-iris btn-novo">
+                    <i data-lucide="plus-circle" size="16"></i> NOVO CONTRATO
+                </a>
+            </div>
+        </div>
+
         <div class="data-card">
-            <table id="tabela-prazos">
+            <table>
                 <thead>
                     <tr>
                         <th>Locatário / CNPJ</th>
                         <th>Vigência Contrato</th>
-                        <th>Janela Renovatória</th>
-                        <th>Início Revisional</th>
-                        <th>Contagem Regressiva</th>
+                        <th>Janela Renovatória (Art. 51)</th>
+                        <th>Revisional (36m)</th>
+                        <th>Status do Prazo</th>
                         <th style="text-align: right;">Ações</th>
                     </tr>
                 </thead>
                 <tbody id="corpo-tabela">
-                    <tr><td colspan="6" style="text-align: center; padding: 40px;">A processar base de dados...</td></tr>
+                    <tr><td colspan="6" style="text-align: center; padding: 40px;">Sincronizando com a base de dados jurídica...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
+    <div id="toast">Link de upload copiado para a área de transferência!</div>
+
     <script>
+        lucide.createIcons();
         const hoje = new Date();
         hoje.setHours(0,0,0,0);
-        document.getElementById('data-hoje').innerText = `SISTEMA ATIVO: ${hoje.toLocaleDateString('pt-pt')}`;
+        document.getElementById('data-hoje').innerText = `HOJE: ${hoje.toLocaleDateString('pt-br')}`;
 
         function parseData(str) {
-            if (!str || str === '-') return null;
+            if (!str || str.length < 8) return null;
             const p = str.split('/');
             return new Date(p[2], p[1] - 1, p[0]);
         }
 
-        async function carregarLista() {
+        async function carregarBase() {
             const tbody = document.getElementById('corpo-tabela');
+            // WEBHOOK DE PRODUÇÃO PARA ESTABILIDADE
             const webhookURL = "https://vissionlet.com/n8n/webhook/buscarprazosativos";
 
             try {
@@ -86,20 +115,20 @@
                 const dados = await response.json();
                 tbody.innerHTML = '';
 
-                // Mapear e calcular dias para ordenação
+                // Processamento Jurídico
                 const listaFinal = dados.map(item => {
                     const dtIni = parseData(item.inicio_contrato);
                     const dtFim = parseData(item.termino_contrato);
                     if (!dtIni || !dtFim) return null;
 
+                    // Diferença de meses
                     const meses = (dtFim.getFullYear() - dtIni.getFullYear()) * 12 + (dtFim.getMonth() - dtIni.getMonth());
                     
-                    // Fim Renovatória: 6 meses e 2 dias antes do fim do contrato
+                    // Cálculo Renovatória: Fechamento 6 meses e 2 dias antes do fim. Abertura 6 meses antes do fechamento.
                     let dtFimRenov = new Date(dtFim);
                     dtFimRenov.setMonth(dtFimRenov.getMonth() - 6);
                     dtFimRenov.setDate(dtFimRenov.getDate() - 2);
 
-                    // Início Renovatória: 6 meses antes do fim renovatória
                     let dtIniRenov = new Date(dtFimRenov);
                     dtIniRenov.setMonth(dtIniRenov.getMonth() - 6);
 
@@ -112,64 +141,78 @@
                     return { ...item, dtIni, dtFim, dtIniRenov, dtFimRenov, dtRev, meses, diasFaltam };
                 }).filter(x => x !== null);
 
-                // Ordenar por proximidade do fim da renovatória
+                // ORDENAR POR URGÊNCIA (Mais próximos primeiro)
                 listaFinal.sort((a, b) => a.diasFaltam - b.diasFaltam);
 
                 listaFinal.forEach(item => {
                     let corClasse = "color-success";
                     let bgClasse = "bg-success";
-                    let msgDias = `${item.diasFaltam} dias para o fim`;
+                    let statusTxt = "EM PRAZO";
+                    let infoDias = `${item.diasFaltam} dias restantes`;
 
                     if (item.meses < 60) {
                         corClasse = "color-muted";
-                        bgClasse = "";
-                        msgDias = "Não elegível p/ renovatória";
+                        bgClasse = "bg-muted";
+                        statusTxt = "N/A";
+                        infoDias = "Contrato < 5 anos";
                     } else if (item.diasFaltam < 0) {
                         corClasse = "color-danger";
                         bgClasse = "bg-danger";
-                        msgDias = `PRAZO EXPIRADO HÁ ${Math.abs(item.diasFaltam)} DIAS`;
+                        statusTxt = "EXPIRADO";
+                        infoDias = `Prazo fatal passou há ${Math.abs(item.diasFaltam)}d`;
                     } else if (item.diasFaltam <= 30) {
                         corClasse = "color-danger";
                         bgClasse = "bg-danger";
+                        statusTxt = "URGENTE";
                     } else if (item.diasFaltam <= 90) {
                         corClasse = "color-warning";
                         bgClasse = "bg-warning";
+                        statusTxt = "ATENÇÃO";
                     }
 
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>
-                            <strong style="color:var(--primary)">${item.locatario}</strong>
+                            <strong style="color:var(--primary); font-size:14px;">${item.locatario}</strong>
                             <span class="cnpj-sub">CNPJ: ${item.cnpj || '---'}</span>
                         </td>
                         <td>
-                            <div><small>INÍCIO:</small> ${item.dtIni.toLocaleDateString('pt-pt')}</div>
-                            <div><small>FIM:</small> ${item.dtFim.toLocaleDateString('pt-pt')}</div>
+                            <div style="font-size:11px;">I: ${item.dtIni.toLocaleDateString('pt-br')}</div>
+                            <div style="font-weight:600;">F: ${item.dtFim.toLocaleDateString('pt-br')}</div>
                         </td>
                         <td>
                             ${item.meses >= 60 ? `
-                                <div><small>ABRE:</small> ${item.dtIniRenov.toLocaleDateString('pt-pt')}</div>
-                                <div class="color-danger"><small>FECHA:</small> ${item.dtFimRenov.toLocaleDateString('pt-pt')}</div>
-                            ` : '<span class="color-muted">Inferior a 60 meses</span>'}
+                                <div style="font-size:11px;">ABRE: ${item.dtIniRenov.toLocaleDateString('pt-br')}</div>
+                                <div style="color:var(--danger); font-weight:700;">FECHA: ${item.dtFimRenov.toLocaleDateString('pt-br')}</div>
+                            ` : '<span style="color:#ccc">---</span>'}
                         </td>
-                        <td>${item.dtRev.toLocaleDateString('pt-pt')}</td>
+                        <td style="font-weight:600;">${item.dtRev.toLocaleDateString('pt-br')}</td>
                         <td>
-                            <span class="badge-status ${bgClasse}">${item.meses >= 60 ? (item.diasFaltam < 0 ? 'Expirado' : 'Em curso') : 'N/A'}</span>
-                            <span class="days-count ${corClasse}">${msgDias}</span>
+                            <span class="badge-status ${bgClasse}">${statusTxt}</span>
+                            <span class="days-count" style="color:${corClasse === 'color-danger' ? 'var(--danger)' : 'inherit'}">${infoDias}</span>
                         </td>
                         <td style="text-align: right;">
-                            <a href="detalhes_processo.html?id=${encodeURIComponent(item.codigo_contrato)}" class="btn-acao">GERENCIAR</a>
+                            <a href="detalhes_processo.html?id=${encodeURIComponent(item.codigo_contrato)}" class="btn-manage">GERENCIAR</a>
                         </td>
                     `;
                     tbody.appendChild(row);
                 });
-
+                lucide.createIcons();
             } catch (e) {
-                tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:red;'>Erro na ligação à base de dados.</td></tr>";
+                tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:red;'>Erro na conexão. Verifique o n8n.</td></tr>";
             }
         }
 
-        carregarLista();
+        function gerarLinkCliente() {
+            const link = window.location.origin + window.location.pathname.replace('index.html', 'upload.html');
+            navigator.clipboard.writeText(link).then(() => {
+                const t = document.getElementById('toast');
+                t.style.display = 'block';
+                setTimeout(() => t.style.display = 'none', 3000);
+            });
+        }
+
+        carregarBase();
     </script>
 </body>
 </html>
