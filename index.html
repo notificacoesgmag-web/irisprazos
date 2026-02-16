@@ -175,21 +175,21 @@
                             </div>`;
                     }
 
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td style="font-weight: 600; color: var(--primary); font-size: 14px;">${item.locatario || 'Indefinido'}</td>
-                        <td>
-                            <div class="date-stack">
-                                <span class="date-row"><span class="date-label">I:</span> ${item.inicio_aditamento || '-'}</span>
-                                <span class="date-row"><span class="date-label">F:</span> ${item.termino_aditamento || '-'}</span>
-                            </div>
-                        </td>
-                        <td>${renovatoriaHTML}</td>
-                        <td>${revisionalHTML}</td>
-                        <td style="text-align: right;">
-                            <a href="detalhes_processo.html?id=${encodeURIComponent(item.codigo_contrato)}" class="btn-acao">Gerenciar</a>
-                        </td>
-                    `;
+                   const row = document.createElement('tr');
+row.innerHTML = `
+    <td style="font-weight: 600; color: var(--primary);">${item.locatario || 'Indefinido'}</td>
+    <td>
+        <div class="date-stack">
+            <span class="date-row"><span class="date-label">I:</span> ${item.inicio_contrato || '-'}</span>
+            <span class="date-row"><span class="date-label">F:</span> ${item.termino_contrato || '-'}</span>
+        </div>
+    </td>
+    <td>${gerarBadge(item["prazorenovatório_final"])}</td>
+    <td>${gerarBadge(item["prazo ação renovatoria"], true)}</td>
+    <td style="text-align: right;">
+        <a href="detalhes_processo.html?id=${encodeURIComponent(item.codigo_contrato)}" class="btn-acao">Gerenciar</a>
+    </td>
+`;
                     tbody.appendChild(row);
                 });
                 lucide.createIcons();
