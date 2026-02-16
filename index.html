@@ -3,212 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IRIS | Gestão de Prazos</title>
+    <title>IRIS | Gestão de Prazos Jurídicos</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --primary: #0a192f;
-            --accent: #c5a059;
-            --bg: #f8fafc;
-            --white: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --success: #10b981;
-            --border: #e2e8f0;
-            --purple: #7c3aed;
+            --primary: #0a192f; --accent: #c5a059; --bg: #f8fafc; --white: #ffffff;
+            --text-main: #1e293b; --text-muted: #64748b; --danger: #ef4444;
+            --warning: #f59e0b; --success: #10b981; --border: #e2e8f0;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); line-height: 1.6; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); font-size: 13px; }
+        .navbar { background: var(--primary); padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; color: var(--white); }
+        .logo-iris { font-family: 'Cinzel', serif; font-size: 22px; letter-spacing: 2px; color: var(--accent); }
+        .container { max-width: 100%; margin: 20px auto; padding: 0 20px; }
         
-        .navbar { background: var(--primary); padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; color: var(--white); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .logo-iris { font-family: 'Cinzel', serif; font-size: 24px; letter-spacing: 3px; color: var(--accent); }
+        .data-card { background: var(--white); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow-x: auto; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; min-width: 1200px; }
+        th { background: #f1f5f9; padding: 12px; font-size: 10px; text-transform: uppercase; color: var(--text-muted); text-align: left; border-bottom: 2px solid var(--border); }
+        td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: middle; line-height: 1.4; }
         
-        .container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
+        .cnpj-sub { font-size: 11px; color: var(--text-muted); display: block; margin-top: 2px; }
+        .days-count { font-weight: 800; font-size: 11px; display: block; margin-top: 4px; }
         
-        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; gap: 15px; flex-wrap: wrap; }
-        .group-btns { display: flex; gap: 10px; }
+        .badge-status { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .color-danger { color: var(--danger); }
+        .color-warning { color: var(--warning); }
+        .color-success { color: var(--success); }
+        .color-muted { color: var(--text-muted); }
 
-        .btn-iris { padding: 12px 20px; border-radius: 4px; font-family: 'Cinzel', serif; font-weight: 700; text-decoration: none; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; border: none; font-size: 13px; }
-        .btn-novo { background: var(--accent); color: var(--white); }
-        .btn-share { background: var(--primary); color: var(--white); border: 1px solid var(--accent); }
+        .bg-danger { background: #fee2e2; color: var(--danger); }
+        .bg-warning { background: #fef3c7; color: var(--warning); }
+        .bg-success { background: #d1fae5; color: var(--success); }
 
-        .data-card { background: var(--white); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid var(--border); }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: #f1f5f9; padding: 15px; font-size: 11px; text-transform: uppercase; color: var(--text-muted); }
-        td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
-        
-        .date-stack { line-height: 1.3; font-family: 'Inter', sans-serif; }
-        .date-row { display: block; font-size: 13px; }
-        .date-label { font-weight: 700; color: var(--primary); margin-right: 4px; }
-
-        .badge { padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; display: block; width: fit-content; margin-bottom: 4px; }
-        .status-danger { background: #fef2f2; color: var(--danger); border: 1px solid #fee2e2; }
-        .status-warning { background: #fffbeb; color: var(--warning); border: 1px solid #fef3c7; }
-        .status-success { background: #ecfdf5; color: var(--success); border: 1px solid #d1fae5; }
-        .status-neutral { background: #f1f5f9; color: var(--text-muted); border: 1px solid var(--border); }
-        .status-expired { background: #f5f3ff; color: var(--purple); border: 1px solid #ddd6fe; }
-        
-        .info-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; display: block; margin-top: 4px; font-weight: 500; }
-
-        .btn-acao { background: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 6px 12px; border-radius: 4px; font-size: 12px; text-decoration: none; transition: 0.2s; }
-        .btn-acao:hover { background: var(--primary); color: white; }
-
-        #toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: white; padding: 12px 25px; border-radius: 8px; display: none; border-left: 5px solid var(--accent); z-index: 1000; }
+        .btn-acao { background: var(--primary); color: white; padding: 8px 12px; border-radius: 4px; text-decoration: none; font-weight: 700; font-size: 11px; }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
-        <div class="logo-iris">IRIS</div>
-        <div id="data-sistema" style="font-size: 11px; opacity: 0.7;"></div>
+        <div class="logo-iris">IRIS | CONTROLO DE PRAZOS</div>
+        <div id="data-hoje" style="font-size: 11px; font-weight: 600;"></div>
     </nav>
 
     <div class="container">
-        <div class="header-actions">
-            <div>
-                <h2 style="font-family: 'Cinzel', serif;">Gestão de Contratos</h2>
-                <p style="color: var(--text-muted); font-size: 14px;">Monitoramento inteligente de prazos legais (Lei 8.245/91).</p>
-            </div>
-            <div class="group-btns">
-                <button onclick="gerarLinkCliente()" class="btn-iris btn-share"><i data-lucide="share-2"></i> LINK CLIENTE</button>
-                <a href="postar_documento.html" class="btn-iris btn-novo"><i data-lucide="plus-circle"></i> NOVO REGISTRO</a>
-            </div>
-        </div>
-
         <div class="data-card">
-            <table>
+            <table id="tabela-prazos">
                 <thead>
                     <tr>
-                        <th>Locatário</th>
-                        <th>Vigência Contratual</th>
-                        <th>Prazo Renovatório</th>
-                        <th>Ação Revisional</th>
+                        <th>Locatário / CNPJ</th>
+                        <th>Vigência Contrato</th>
+                        <th>Janela Renovatória</th>
+                        <th>Início Revisional</th>
+                        <th>Contagem Regressiva</th>
                         <th style="text-align: right;">Ações</th>
                     </tr>
                 </thead>
-                <tbody id="tabela-corpo">
-                    <tr><td colspan="5" style="text-align: center; padding: 40px;">Carregando dados...</td></tr>
+                <tbody id="corpo-tabela">
+                    <tr><td colspan="6" style="text-align: center; padding: 40px;">A processar base de dados...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <div id="toast">Link copiado com sucesso!</div>
-
     <script>
-        lucide.createIcons();
-
         const hoje = new Date();
         hoje.setHours(0,0,0,0);
-        document.getElementById('data-sistema').innerText = `Sistema Ativo: ${hoje.toLocaleDateString('pt-br')}`;
+        document.getElementById('data-hoje').innerText = `SISTEMA ATIVO: ${hoje.toLocaleDateString('pt-pt')}`;
 
-        function parseData(dataStr) {
-            if (!dataStr || dataStr === '-' || dataStr.length < 8) return null;
-            const partes = dataStr.split('/');
-            return new Date(partes[2], partes[1] - 1, partes[0]);
+        function parseData(str) {
+            if (!str || str === '-') return null;
+            const p = str.split('/');
+            return new Date(p[2], p[1] - 1, p[0]);
         }
 
-        function formatarData(data) {
-            return data.toLocaleDateString('pt-br');
-        }
-
-        async function carregarDados() {
-            const tbody = document.getElementById('tabela-corpo');
-            const webhookURL = "https://vissionlet.com/n8n/webhook/buscarprazosativos"; 
+        async function carregarLista() {
+            const tbody = document.getElementById('corpo-tabela');
+            const webhookURL = "https://vissionlet.com/n8n/webhook/buscarprazosativos";
 
             try {
                 const response = await fetch(webhookURL);
                 const dados = await response.json();
                 tbody.innerHTML = '';
 
-                dados.forEach(item => {
-                    const dataInicio = parseData(item.inicio_aditamento);
-                    const dataFim = parseData(item.termino_aditamento);
+                // Mapear e calcular dias para ordenação
+                const listaFinal = dados.map(item => {
+                    const dtIni = parseData(item.inicio_contrato);
+                    const dtFim = parseData(item.termino_contrato);
+                    if (!dtIni || !dtFim) return null;
+
+                    const meses = (dtFim.getFullYear() - dtIni.getFullYear()) * 12 + (dtFim.getMonth() - dtIni.getMonth());
                     
-                    let renovatoriaHTML = "-";
-                    let revisionalHTML = "-";
+                    // Fim Renovatória: 6 meses e 2 dias antes do fim do contrato
+                    let dtFimRenov = new Date(dtFim);
+                    dtFimRenov.setMonth(dtFimRenov.getMonth() - 6);
+                    dtFimRenov.setDate(dtFimRenov.getDate() - 2);
 
-                    if (dataInicio && dataFim) {
-                        // --- 1. CÁLCULO RENOVATÓRIA ---
-                        const diffMeses = (dataFim.getFullYear() - dataInicio.getFullYear()) * 12 + (dataFim.getMonth() - dataInicio.getMonth());
-                        
-                        if (diffMeses < 60) {
-                            renovatoriaHTML = `<span class="badge status-neutral">Sem renovatória</span><span class="info-label">Contrato < 60 meses</span>`;
-                        } else {
-                            const dataFimRenov = new Date(dataFim);
-                            dataFimRenov.setMonth(dataFimRenov.getMonth() - 6);
-                            dataFimRenov.setDate(dataFimRenov.getDate() - 2);
+                    // Início Renovatória: 6 meses antes do fim renovatória
+                    let dtIniRenov = new Date(dtFimRenov);
+                    dtIniRenov.setMonth(dtIniRenov.getMonth() - 6);
 
-                            const dataInicioRenov = new Date(dataFimRenov);
-                            dataInicioRenov.setMonth(dataInicioRenov.getMonth() - 6);
+                    // Revisional: 36 meses após início
+                    let dtRev = new Date(dtIni);
+                    dtRev.setMonth(dtRev.getMonth() + 36);
 
-                            const diasRestantes = Math.ceil((dataFimRenov - hoje) / (1000 * 60 * 60 * 24));
-                            let statusCor = "status-success";
-                            if (diasRestantes < 0) statusCor = "status-expired";
-                            else if (diasRestantes < 30) statusCor = "status-danger";
-                            else if (diasRestantes < 90) statusCor = "status-warning";
+                    const diasFaltam = Math.ceil((dtFimRenov - hoje) / (1000 * 60 * 60 * 24));
 
-                            renovatoriaHTML = `
-                                <div class="date-stack">
-                                    <span class="badge ${statusCor}"><span class="date-label">I:</span> ${formatarData(dataInicioRenov)}</span>
-                                    <span class="badge ${statusCor}"><span class="date-label">F:</span> ${formatarData(dataFimRenov)}</span>
-                                    <span class="info-label">${diasRestantes < 0 ? 'Expirado' : 'Faltam ' + diasRestantes + ' dias'}</span>
-                                </div>`;
-                        }
+                    return { ...item, dtIni, dtFim, dtIniRenov, dtFimRenov, dtRev, meses, diasFaltam };
+                }).filter(x => x !== null);
 
-                        // --- 2. CÁLCULO REVISIONAL ---
-                        const dataInicioRev = new Date(dataInicio);
-                        dataInicioRev.setMonth(dataInicioRev.getMonth() + 36);
-                        
-                        const diasParaRev = Math.ceil((dataInicioRev - hoje) / (1000 * 60 * 60 * 24));
-                        const statusCorRev = diasParaRev > 0 ? "status-neutral" : "status-success";
+                // Ordenar por proximidade do fim da renovatória
+                listaFinal.sort((a, b) => a.diasFaltam - b.diasFaltam);
 
-                        revisionalHTML = `
-                            <div class="date-stack">
-                                <span class="badge ${statusCorRev}"><span class="date-label">I:</span> ${formatarData(dataInicioRev)}</span>
-                                <span class="badge ${statusCorRev}"><span class="date-label">F:</span> ${formatarData(dataFim)}</span>
-                                <span class="info-label">${diasParaRev > 0 ? 'Habilita em ' + diasParaRev + ' dias' : 'Habilitada'}</span>
-                            </div>`;
+                listaFinal.forEach(item => {
+                    let corClasse = "color-success";
+                    let bgClasse = "bg-success";
+                    let msgDias = `${item.diasFaltam} dias para o fim`;
+
+                    if (item.meses < 60) {
+                        corClasse = "color-muted";
+                        bgClasse = "";
+                        msgDias = "Não elegível p/ renovatória";
+                    } else if (item.diasFaltam < 0) {
+                        corClasse = "color-danger";
+                        bgClasse = "bg-danger";
+                        msgDias = `PRAZO EXPIRADO HÁ ${Math.abs(item.diasFaltam)} DIAS`;
+                    } else if (item.diasFaltam <= 30) {
+                        corClasse = "color-danger";
+                        bgClasse = "bg-danger";
+                    } else if (item.diasFaltam <= 90) {
+                        corClasse = "color-warning";
+                        bgClasse = "bg-warning";
                     }
 
-                   const row = document.createElement('tr');
-row.innerHTML = `
-    <td style="font-weight: 600; color: var(--primary);">${item.locatario || 'Indefinido'}</td>
-    <td>
-        <div class="date-stack">
-            <span class="date-row"><span class="date-label">I:</span> ${item.inicio_contrato || '-'}</span>
-            <span class="date-row"><span class="date-label">F:</span> ${item.termino_contrato || '-'}</span>
-        </div>
-    </td>
-    <td>${gerarBadge(item["prazorenovatório_final"])}</td>
-    <td>${gerarBadge(item["prazo ação renovatoria"], true)}</td>
-    <td style="text-align: right;">
-        <a href="detalhes_processo.html?id=${encodeURIComponent(item.codigo_contrato)}" class="btn-acao">Gerenciar</a>
-    </td>
-`;
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>
+                            <strong style="color:var(--primary)">${item.locatario}</strong>
+                            <span class="cnpj-sub">CNPJ: ${item.cnpj || '---'}</span>
+                        </td>
+                        <td>
+                            <div><small>INÍCIO:</small> ${item.dtIni.toLocaleDateString('pt-pt')}</div>
+                            <div><small>FIM:</small> ${item.dtFim.toLocaleDateString('pt-pt')}</div>
+                        </td>
+                        <td>
+                            ${item.meses >= 60 ? `
+                                <div><small>ABRE:</small> ${item.dtIniRenov.toLocaleDateString('pt-pt')}</div>
+                                <div class="color-danger"><small>FECHA:</small> ${item.dtFimRenov.toLocaleDateString('pt-pt')}</div>
+                            ` : '<span class="color-muted">Inferior a 60 meses</span>'}
+                        </td>
+                        <td>${item.dtRev.toLocaleDateString('pt-pt')}</td>
+                        <td>
+                            <span class="badge-status ${bgClasse}">${item.meses >= 60 ? (item.diasFaltam < 0 ? 'Expirado' : 'Em curso') : 'N/A'}</span>
+                            <span class="days-count ${corClasse}">${msgDias}</span>
+                        </td>
+                        <td style="text-align: right;">
+                            <a href="detalhes_processo.html?id=${encodeURIComponent(item.codigo_contrato)}" class="btn-acao">GERENCIAR</a>
+                        </td>
+                    `;
                     tbody.appendChild(row);
                 });
-                lucide.createIcons();
-            } catch (error) {
-                tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red; padding:20px;'>Erro na conexão com o servidor de dados.</td></tr>";
+
+            } catch (e) {
+                tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:red;'>Erro na ligação à base de dados.</td></tr>";
             }
         }
 
-        function gerarLinkCliente() {
-            const urlBase = window.location.origin + window.location.pathname.replace('index.html', '');
-            const linkFinal = `${urlBase}upload.html?access=${btoa('IRIS-'+(Date.now() + 86400000))}`;
-            navigator.clipboard.writeText(linkFinal).then(() => {
-                const toast = document.getElementById('toast');
-                toast.style.display = 'block';
-                setTimeout(() => { toast.style.display = 'none'; }, 3000);
-            });
-        }
-
-        carregarDados();
+        carregarLista();
     </script>
 </body>
 </html>
