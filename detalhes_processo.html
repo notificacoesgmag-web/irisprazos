@@ -301,7 +301,7 @@
     async function confirmarExclusao() {
         const id = document.getElementById('codigo_contrato_original').value;
         try {
-            await fetch("https://vissionlet.com/n8n/webhook/finalizar", {
+            await fetch("https://vissionlet.com/n8n/webhook/apagar", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: id })
