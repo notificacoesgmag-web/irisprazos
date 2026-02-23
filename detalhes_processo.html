@@ -159,8 +159,8 @@
                 <div class="actions-group">
                     <div class="main-buttons">
                         <button type="button" id="btn-finalizar" class="btn-iris btn-finish" onclick="finalizarPrazo()">
-                            <i data-lucide="check-circle" size="18"></i> Concluir Prazo
-                        </button>
+    <i data-lucide="check-circle" size="18"></i> Concluir Prazo
+</button>
 
                         <button type="button" id="btn-editar" class="btn-iris btn-edit" onclick="habilitarEdicao()">
                             <i data-lucide="edit-3" size="18"></i> Editar Informações
@@ -294,7 +294,42 @@
             lucide.createIcons();
         }
     }
+async function finalizarPrazo() {
+        const id = document.getElementById('codigo_contrato_original').value;
+        const btn = document.getElementById('btn-finalizar');
 
+        if (!confirm("Deseja marcar este prazo como Finalizado?")) {
+            return;
+        }
+
+        try {
+            btn.disabled = true;
+            btn.innerHTML = "<i data-lucide='refresh-cw' class='spin'></i> Processando...";
+            lucide.createIcons();
+
+            // Envia para o link do webhook-test de finalização
+            const response = await fetch("https://vissionlet.com/n8n/webhook/finalizar", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    id: id,
+                    status: "Finalizado" 
+                })
+            });
+
+            if (response.ok) {
+                alert("Prazo concluído com sucesso!");
+                window.location.href = 'index.html'; // Volta para o painel após concluir
+            } else {
+                throw new Error();
+            }
+        } catch (e) {
+            alert("Erro ao concluir prazo. Verifique a conexão com o servidor.");
+            btn.disabled = false;
+            btn.innerHTML = "<i data-lucide='check-circle' size='18'></i> Concluir Prazo";
+            lucide.createIcons();
+        }
+    }
     // Funções de Modal e Exclusão permanecem iguais
     function abrirModal() { document.getElementById('modalDelete').style.display = 'flex'; }
     function fecharModal() { document.getElementById('modalDelete').style.display = 'none'; }
